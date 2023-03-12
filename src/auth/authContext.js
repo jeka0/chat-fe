@@ -22,21 +22,20 @@ export const Auth = ({ children })=>{
     }
 
     const update = async ()=>{
-        /*getUser()
+        getUser()
             .then((user)=>{
                 setIsAuth(true);
                 setUser(user);
             })
             .catch((err)=>{
                 setIsAuth(false)
-            });*/
-            setIsAuth(false)
+            });
     }
 
     const login = async (data) => {
         await reqLogin(data);
         setIsAuth(true);
-        //setUser(await getUser());
+        setUser(await getUser());
     };
 
     const register = async (data) =>{
