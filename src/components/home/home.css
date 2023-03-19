@@ -1,0 +1,22 @@
+.content_home{
+    display:flex;
+    flex-flow: column wrap;
+    width: 600px;
+    height: 100%;
+}
+
+.actionBar{
+    margin-top: 20px;
+}
+
+.chatSpace{
+    display: flex;
+    flex-direction: column;
+    height: 88%;
+    overflow: auto;
+}
+
+.inputPanel{
+    margin-bottom: 20px;
+    bottom: 0px;
+}
