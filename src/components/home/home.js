@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../auth/useAuth';
 import { useSocket } from '../../socketContext/useSocket';
@@ -11,11 +11,12 @@ function Home(){
     const { logout, user }= useAuth();
     const { sendMessage, socket } = useSocket();
     const navigate = useNavigate();
-    const [message, setMessage] = useState({});
+    const [message, setMessage] = useState({message:""});
     const [messages, setMessages] = useState({ data:[] });
+    const bottomRef = useRef(null);
 
     useEffect(()=>{
-        getAllMessages().then((data)=>{   
+        getAllMessages().then((data)=>{  
             setMessages({ data });
         });
     },[]);
@@ -27,9 +28,13 @@ function Home(){
     },[socket]);
     const update = (mess)=>{
         setMessages(prevState => ({
-            data: [...prevState.data, mess]
+            data: [mess, ...prevState.data]
           }));
     }
+
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+      }, [messages]);
 
     const onSubmit = (event)=>{
         event.preventDefault();
@@ -46,6 +51,7 @@ function Home(){
 
     const onSend = ()=>{
         sendMessage(message);
+        setMessage({message:""});
     }
 
     return(
@@ -55,10 +61,11 @@ function Home(){
                 <button onClick={onSubmit}>logout</button>
             </div>
             <div className="chatSpace">
+                <div ref={bottomRef}/>
                 {messages.data.map(mess=><Message key={mess.id} data = {mess} />)}
-            </div>
+            </div >
             <div className="inputPanel">
-                <input name = "message" onInput={updateMessage}></input>
+                <input name = "message" onInput={updateMessage} value={message.message}></input>
                 <button onClick={onSend}>send</button>
             </div>
         </div>

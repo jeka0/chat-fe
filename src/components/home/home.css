@@ -6,12 +6,15 @@
 }
 
 .actionBar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
 }
 
 .chatSpace{
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     height: 88%;
     overflow: auto;
 }
@@ -19,4 +22,19 @@
 .inputPanel{
     margin-bottom: 20px;
     bottom: 0px;
+}
+
+.inputPanel input{
+    width: 90%;
+    float:left;
+    background-color:#292f3f;
+    border: 1px solid;
+    color: white;
+    border-color: white;
+    border-radius: 20px;
+}
+
+.inputPanel button{
+    width: 8%;
+    float:right;
 }
