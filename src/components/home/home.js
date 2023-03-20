@@ -26,10 +26,9 @@ function Home(){
         }
     },[socket]);
     const update = (mess)=>{
-        console.log(messages.data);
-        messages.data.push(mess);
-        console.log(messages.data);
-        setMessages(messages);
+        setMessages(prevState => ({
+            data: [...prevState.data, mess]
+          }));
     }
 
     const onSubmit = (event)=>{
