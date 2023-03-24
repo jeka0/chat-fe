@@ -3,16 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../auth/useAuth';
 import { useSocket } from '../../socketContext/useSocket';
 import { getAllMessages } from '../../services/messageService';
+import Modal from "../Modal/modal";
+import imgSend from "../../Images/send.png";
+import imgClose from "../../Images/close.png";
 import Message from '../message/message';
 import "./home.css";
 
 function Home(){
 
     const { logout, user }= useAuth();
-    const { sendMessage, socket } = useSocket();
+    const { sendMessage, socket, updateMessage, deleteMessage } = useSocket();
     const navigate = useNavigate();
     const [message, setMessage] = useState({message:""});
     const [messages, setMessages] = useState({ data:[] });
+    const [isConfigured, setIsConfigured] = useState(false); 
+    const [isModalActive, setIsModalActive] = useState(false); 
+    const [isEdit, setIsEdit] = useState(false); 
+    const [deleteMessageId, setDeleteMessageId] = useState();
     const bottomRef = useRef(null);
 
     useEffect(()=>{
@@ -22,8 +29,12 @@ function Home(){
     },[]);
 
     useEffect(()=>{
-        if(socket){
+        console.log("+-+");
+        if(socket && !isConfigured){
             socket.on("message", update);
+            socket.on("delete", deleteHandler);
+            socket.on("update", updateHandler);
+            setIsConfigured(true);
         }
     },[socket]);
     const update = (mess)=>{
@@ -32,11 +43,31 @@ function Home(){
           }));
     }
 
+    const deleteHandler = (id)=>{
+        setMessages(prevState => {
+            prevState.data.forEach((el, i) => {
+                if (el.id == id) prevState.data.splice(i, 1)
+            })
+
+            return ({data: [...prevState.data]});
+        });
+    }
+
+    const updateHandler = (updatedMessage)=>{
+        setMessages(prevState => {
+            prevState.data.forEach((el, i) => {
+                if (el.id == updatedMessage.id) prevState.data[i] = updatedMessage;
+            })
+
+            return ({data: [...prevState.data]});
+        });
+    }
+
     useEffect(() => {
         bottomRef.current?.scrollIntoView({behavior: 'smooth'});
-      }, [messages]);
+    }, [messages]);
 
-    const onSubmit = (event)=>{
+    const onLogout = (event)=>{
         event.preventDefault();
         logout()
         .then(()=>navigate("/login"))
@@ -45,12 +76,35 @@ function Home(){
         });
     }
 
-    const updateMessage = (event)=>{
+    const editMessage = (id, message)=>{
+        setIsEdit(true);
+        setMessage({id, message});
+    }
+
+    const startModal = (id)=>{
+        setDeleteMessageId(id);
+        setIsModalActive(true);
+    }
+
+    const deleteMess = ()=>{
+        deleteMessage(deleteMessageId);
+        setIsModalActive(false);
+    }
+
+    const updateMess = (event)=>{
         setMessage({...message, [event.target.name] : event.target.value})
     }
 
     const onSend = ()=>{
-        sendMessage(message);
+        if(message.message === ""){
+            return false;
+        }
+        if(isEdit){
+            updateMessage(message);
+            setIsEdit(false);
+        }else{
+            sendMessage(message);
+        }
         setMessage({message:""});
     }
 
@@ -58,16 +112,19 @@ function Home(){
         <div className="content_home">
             <div className="actionBar">
                 {user.login}
-                <button onClick={onSubmit}>logout</button>
+                <button onClick={onLogout}>logout</button>
             </div>
             <div className="chatSpace">
                 <div ref={bottomRef}/>
-                {messages.data.map(mess=><Message key={mess.id} data = {mess} />)}
+                {messages.data.map((mess, i)=><Message key={mess.id} data = {mess} next = {messages.data[i+1]} edit ={editMessage} deleteMessage={startModal}/>)}
             </div >
             <div className="inputPanel">
-                <input name = "message" onInput={updateMessage} value={message.message}></input>
-                <button onClick={onSend}>send</button>
+                <input className="message_text" name = "message" onInput={updateMess} value={message.message}></input>
+                <input className="close" type="image" src={imgClose} alt="Кнопка «close»" onClick={()=>{setIsEdit(false);setMessage({message:""});}} hidden={!isEdit}/>
+                <button onClick={onSend}><img src={imgSend} /></button>
             </div>
+            <Modal active={isModalActive} setActive={setIsModalActive} text="Are you sure you want to delete the message?" 
+                confirmationButtonText="Delete" confirmation = {deleteMess} />
         </div>
     );
 }

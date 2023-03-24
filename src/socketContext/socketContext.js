@@ -14,7 +14,8 @@ export const Socket = ({ children })=>{
         const nowSock = io("http://localhost:3021", {
             auth: {
               token: `Bearer ${accessToken}`
-            }
+            },
+            autoConnect: false
         });
         nowSock.on('connect', ()=>{
             console.log("+");
@@ -33,6 +34,7 @@ export const Socket = ({ children })=>{
                 });
             }
         });
+        nowSock.connect();
 
         setSocket(nowSock);
     }, [])
@@ -41,10 +43,18 @@ export const Socket = ({ children })=>{
     const sendMessage = (message)=>{
         socket.emit("message",message);
     };
+
+    const updateMessage = (message)=>{
+        socket.emit("update", message);
+    }
+
+    const deleteMessage = (id)=>{
+        socket.emit("delete", id);
+    }
      
 
     return (
-        <SocketContext.Provider value={ {sendMessage, socket} }>
+        <SocketContext.Provider value={ {sendMessage, updateMessage, deleteMessage, socket} }>
             {children}
         </SocketContext.Provider>
     )
