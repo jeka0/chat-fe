@@ -1,6 +1,7 @@
 .content_home{
     display:flex;
     flex-flow: column wrap;
+    min-width: 234px;
     width: 600px;
     height: 100%;
 }

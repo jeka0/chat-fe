@@ -19,6 +19,7 @@ function Home(){
     const [isConfigured, setIsConfigured] = useState(false); 
     const [isModalActive, setIsModalActive] = useState(false); 
     const [isEdit, setIsEdit] = useState(false); 
+    const [isBottom, setIsBottom] = useState(false); 
     const [deleteMessageId, setDeleteMessageId] = useState();
     const bottomRef = useRef(null);
 
@@ -29,7 +30,6 @@ function Home(){
     },[]);
 
     useEffect(()=>{
-        console.log("+-+");
         if(socket && !isConfigured){
             socket.on("message", update);
             socket.on("delete", deleteHandler);
@@ -46,7 +46,7 @@ function Home(){
     const deleteHandler = (id)=>{
         setMessages(prevState => {
             prevState.data.forEach((el, i) => {
-                if (el.id == id) prevState.data.splice(i, 1)
+                if (el.id === id) prevState.data.splice(i, 1)
             })
 
             return ({data: [...prevState.data]});
@@ -56,7 +56,7 @@ function Home(){
     const updateHandler = (updatedMessage)=>{
         setMessages(prevState => {
             prevState.data.forEach((el, i) => {
-                if (el.id == updatedMessage.id) prevState.data[i] = updatedMessage;
+                if (el.id === updatedMessage.id) prevState.data[i] = updatedMessage;
             })
 
             return ({data: [...prevState.data]});
@@ -64,8 +64,17 @@ function Home(){
     }
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+        if(isBottom)bottomRef.current?.scrollIntoView({behavior: 'smooth'});
     }, [messages]);
+
+
+    useEffect(() => {
+        if(bottomRef.current){
+            const observer = new IntersectionObserver(([entry]) =>setIsBottom(entry.isIntersecting));
+  
+            observer.observe(bottomRef.current);
+        }
+    }, [bottomRef]);
 
     const onLogout = (event)=>{
         event.preventDefault();
@@ -104,6 +113,7 @@ function Home(){
             setIsEdit(false);
         }else{
             sendMessage(message);
+            setIsBottom(true);
         }
         setMessage({message:""});
     }

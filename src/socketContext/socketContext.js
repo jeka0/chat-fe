@@ -18,7 +18,7 @@ export const Socket = ({ children })=>{
             autoConnect: false
         });
         nowSock.on('connect', ()=>{
-            console.log("+");
+            console.log("User connected");
         });
 
         nowSock.on('error', err=>{
@@ -27,7 +27,6 @@ export const Socket = ({ children })=>{
 
         nowSock.on("connect_error", (err) => {
             if(err?.message === 'AccessToken is not valid'){
-                console.log("-");
                 reqRefresh().then(({accessToken})=>{
                     nowSock.auth.token = `Bearer ${accessToken}`;
                     nowSock.connect();
