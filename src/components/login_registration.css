@@ -1,0 +1,59 @@
+.content{
+    display: flex;
+    flex-flow: column wrap;
+    width: 250px;
+}
+
+.margin{
+    margin-top: 20px;
+}
+
+.input{  
+    background-color: #292f3f;
+    color: white;
+    font-size: medium;
+    height: 24px;
+    flex-grow: 1;
+}
+.border{
+    border-radius: 8px;
+    border: 0.5px solid  rgb(173, 173, 173);
+    margin-top: 10px;
+}
+
+.error{
+    border: 0.5px solid  red;
+}
+
+.error_message{
+    color: rgb(255, 63, 63);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.link{
+    color: rgb(119, 119, 255);
+    margin: auto;
+    margin-top: 10px;
+}
+
+.header{
+    margin: auto;
+    font-size: 30px;
+}
+
+button{
+    height: 24px;
+    border-radius: 8px;
+    border: none;
+    background-color: #42566c;
+    color: white;
+}
+
+button:hover{
+    background-color: #3a4b5e;
+}
+
+button:active{
+    background-color: #42556b;
+}
